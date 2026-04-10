@@ -205,13 +205,14 @@
     <br>
     <textarea id="optionsBox" oninput="syncFromTextarea()"></textarea><br>
     <div class="actions">
-    <button onclick="exportJSON()">📤 Exportar</button>
+        <button onclick="exportJSON()">📤 Exportar</button>
 
-    <label class="file-label">
-        📥 Importar
-        <input type="file" onchange="importJSON(event)" hidden>
-    </label>
-</div>
+        <label class="file-label">
+            📥 Importar
+            <input type="file" onchange="importJSON(event)" hidden>
+        </label>
+    </div>
+    <span id="fileName" style="font-size:12px; color:#aaa;"></span>
 
     <!-- Modal -->
     <div class="modal" id="resultModal">
@@ -282,13 +283,13 @@
 
                 // Reducir tamaño si el texto es largo
                 if (opt.length > 5) {
-                    fontSize *= 0.8;
-                }
-                if (opt.length > 9) {
                     fontSize *= 0.7;
                 }
-                if (opt.length > 13) {
+                if (opt.length > 9) {
                     fontSize *= 0.6;
+                }
+                if (opt.length > 13) {
+                    fontSize *= 0.5;
                 }
 
                 fontSize = Math.max(10, fontSize);
@@ -413,10 +414,18 @@
 
         function importJSON(event) {
             let file = event.target.files[0];
+
+            document.getElementById("fileName").innerText = file.name;
+
             let reader = new FileReader();
 
             reader.onload = function (e) {
-                options = JSON.parse(e.target.result);
+                try {
+                    options = JSON.parse(e.target.result);
+                } catch {
+                    alert("El archivo no es un JSON válido");
+                    return;
+                }
                 persistOptions();
                 updateBox();
                 drawWheel();
@@ -429,8 +438,13 @@
         resizeCanvas();
 
         let saved = localStorage.getItem("wheelOptions");
+
         if (saved) {
-            options = JSON.parse(saved);
+            try {
+                options = JSON.parse(saved);
+            } catch {
+                options = [];
+            }
         }
 
         updateBox();
