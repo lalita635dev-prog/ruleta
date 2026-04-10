@@ -111,8 +111,9 @@
 
         /* Mejorar botones en móvil */
         button {
-            width: 90%;
-            max-width: 300px;
+            width: auto;
+            min-width: 120px;
+            padding: 10px 18px;
         }
 
         /* Textarea responsive */
@@ -120,9 +121,66 @@
             width: 90%;
         }
 
-        input {
+        input,
+        textarea {
             width: 90%;
-            max-width: 300px;
+            max-width: 400px;
+            background: #2a2a40;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 10px;
+            outline: none;
+        }
+
+        input::placeholder {
+            color: #aaa;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .file-label {
+            display: inline-block;
+            background: #444;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .file-label:hover {
+            background: #666;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding: 20px;
+            background: #141420;
+            border-top: 1px solid #333;
+        }
+
+        .footer-links {
+            margin-top: 10px;
+        }
+
+        .footer a {
+            color: #ff4d6d;
+            margin: 0 10px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -135,19 +193,23 @@
     <canvas id="wheel"></canvas>
 
     <br>
-    <button onclick="spin()">Girar</button>
+    <div class="actions"><button onclick="spin()">Girar</button></div>
 
     <h3>Opciones</h3>
     <input id="newOption" placeholder="Nueva opción">
-    <button onclick="addOption()">Agregar</button>
+    <div class="actions"><button onclick="addOption()">Agregar</button></div>
 
     <br>
     <textarea id="optionsBox"></textarea><br>
-
-    <button onclick="saveOptions()">Guardar</button>
-    <button onclick="loadOptions()">Cargar</button>
-    <button onclick="exportJSON()">Exportar</button>
-    <input type="file" onchange="importJSON(event)">
+    <div class="actions">
+        <button onclick="saveOptions()">Guardar</button>
+        <button onclick="loadOptions()">Cargar</button>
+        <button onclick="exportJSON()">Exportar</button>
+    </div>
+    <label class="file-label">
+        📂 Importar JSON
+        <input type="file" onchange="importJSON(event)" hidden>
+    </label>
 
     <!-- Modal -->
     <div class="modal" id="resultModal">
@@ -155,8 +217,10 @@
             <h2>🏆 Resultado</h2>
             <p id="resultText"></p>
 
-            <button onclick="removeWinner()">Eliminar opción</button>
-            <button class="close-btn" onclick="closeModal()">Cerrar</button>
+            <div class="actions">
+                <button onclick="removeWinner()">Eliminar opción</button>
+                <button class="close-btn" onclick="closeModal()">Cerrar</button>
+            </div>
         </div>
     </div>
 
@@ -227,7 +291,10 @@
 
                 // Dibujar texto con borde + relleno
                 ctx.strokeText(opt, center * 0.65, 0);
-                ctx.fillText(opt, center * 0.65, 0);
+                let text = opt.length > 12 ? opt.substring(0, 10) + "…" : opt;
+
+                ctx.strokeText(text, center * 0.65, 0);
+                ctx.fillText(text, center * 0.65, 0);
 
                 // reset sombra (importante)
                 ctx.shadowColor = "transparent";
@@ -347,6 +414,17 @@
         updateBox();
         drawWheel();
     </script>
+
+    <footer class="footer">
+        <p>© By Lalita635</p>
+
+        <div class="footer-links">
+            <a href="https://github.com/lalita635dev-prog/ruleta" target="_blank">GitHub</a>
+            <a href="https://github.com/lalita635dev-prog/ruleta/issues" target="_blank">Reportar Bug</a>
+            <a href="https://github.com/lalita635dev-prog/ruleta/issues" target="_blank">Sugerir Mejora</a>
+            <a href="http://bit.ly/4fS0yUa" target="_blank">Colaborar</a>
+        </div>
+    </footer>
 
 </body>
 
