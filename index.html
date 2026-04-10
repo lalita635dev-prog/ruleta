@@ -1,257 +1,341 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<title>Ruleta by Lalita635</title>
+    <meta charset="UTF-8">
+    <title>Ruleta by Lalita635</title>
 
-<style>
-body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background: #1e1e2f;
-    color: white;
-}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #1e1e2f;
+            color: white;
+        }
 
-h1 {
-    margin-top: 20px;
-}
+        h1 {
+            margin-top: 20px;
+        }
 
-/* Flecha */
-.pointer {
-    width: 0;
-    height: 0;
-    border-left: 15px solid transparent;
-    border-right: 15px solid transparent;
-    border-bottom: 30px solid #ff4d6d;
-    margin: 0 auto;
-}
+        /* Flecha */
+        .pointer {
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 30px solid #ff4d6d;
+            margin: 0 auto;
+        }
 
-/* Canvas */
-canvas {
-    margin-top: 10px;
-    background: #fff;
-    border-radius: 50%;
-}
+        /* Canvas */
+        canvas {
+            margin-top: 20px;
+            background: #fff;
+            border-radius: 50%;
+        }
 
-/* Botones */
-button, input {
-    margin: 5px;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-}
+        /* Botones */
+        button,
+        input {
+            margin: 5px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+        }
 
-button {
-    cursor: pointer;
-    background: #ff4d6d;
-    color: white;
-}
+        button {
+            cursor: pointer;
+            background: #ff4d6d;
+            color: white;
+        }
 
-/* Textarea */
-textarea {
-    width: 80%;
-    height: 80px;
-    margin-top: 10px;
-}
+        /* Textarea */
+        textarea {
+            width: 80%;
+            height: 80px;
+            margin-top: 10px;
+        }
 
-/* Modal */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.7);
-    display: none;
-    justify-content: center;
-    align-items: center;
-}
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
 
-.modal-content {
-    background: #2a2a40;
-    padding: 30px;
-    border-radius: 10px;
-    text-align: center;
-    animation: pop 0.3s ease;
-}
+        .modal-content {
+            background: #2a2a40;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            animation: pop 0.3s ease;
+        }
 
-@keyframes pop {
-    from { transform: scale(0.5); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-}
+        @keyframes pop {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
 
-.modal h2 {
-    margin-bottom: 20px;
-}
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
 
-.close-btn {
-    background: #4CAF50;
-}
-</style>
+        .modal h2 {
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            background: #4CAF50;
+        }
+
+        canvas {
+            width: 90vw;
+            max-width: 400px;
+            height: auto;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .pointer {
+            margin-top: 10px;
+        }
+
+        /* Mejorar botones en móvil */
+        button {
+            width: 90%;
+            max-width: 300px;
+        }
+
+        /* Textarea responsive */
+        textarea {
+            width: 90%;
+        }
+
+        input {
+            width: 90%;
+            max-width: 300px;
+        }
+    </style>
 </head>
 
 <body>
 
-<h1>🎡 Ruleta de Opciones</h1>
+    <h1>🎡 Ruleta de Opciones</h1>
 
-<div class="pointer"></div>
-<canvas id="wheel" width="400" height="400"></canvas>
+    <div class="pointer"></div>
+    <canvas id="wheel"></canvas>
 
-<br>
-<button onclick="spin()">Girar</button>
+    <br>
+    <button onclick="spin()">Girar</button>
 
-<h3>Opciones</h3>
-<input id="newOption" placeholder="Nueva opción">
-<button onclick="addOption()">Agregar</button>
+    <h3>Opciones</h3>
+    <input id="newOption" placeholder="Nueva opción">
+    <button onclick="addOption()">Agregar</button>
 
-<br>
-<textarea id="optionsBox"></textarea><br>
+    <br>
+    <textarea id="optionsBox"></textarea><br>
 
-<button onclick="saveOptions()">Guardar</button>
-<button onclick="loadOptions()">Cargar</button>
-<button onclick="exportJSON()">Exportar</button>
-<input type="file" onchange="importJSON(event)">
+    <button onclick="saveOptions()">Guardar</button>
+    <button onclick="loadOptions()">Cargar</button>
+    <button onclick="exportJSON()">Exportar</button>
+    <input type="file" onchange="importJSON(event)">
 
-<!-- Modal -->
-<div class="modal" id="resultModal">
-    <div class="modal-content">
-        <h2>🏆 Resultado</h2>
-        <p id="resultText"></p>
-        <button class="close-btn" onclick="closeModal()">Cerrar</button>
+    <!-- Modal -->
+    <div class="modal" id="resultModal">
+        <div class="modal-content">
+            <h2>🏆 Resultado</h2>
+            <p id="resultText"></p>
+            <button class="close-btn" onclick="closeModal()">Cerrar</button>
+        </div>
     </div>
-</div>
 
-<script>
-let options = ["Alienígena", "Vampiro", "Sirena", "Hechicero", "Hada", "Licántropo"];
-let startAngle = 0;
-let arc;
-let spinning = false;
+    <script>
+        let options = ["Alienígena", "Vampiro", "Sirena", "Hechicero", "Hada", "Licántropo"];
+        let startAngle = 0;
+        let arc;
+        let spinning = false;
 
-const canvas = document.getElementById("wheel");
-const ctx = canvas.getContext("2d");
+        const canvas = document.getElementById("wheel");
+        const ctx = canvas.getContext("2d");
 
-function drawWheel() {
-    arc = Math.PI * 2 / options.length;
-    ctx.clearRect(0, 0, 400, 400);
-
-    options.forEach((opt, i) => {
-        let angle = startAngle + i * arc;
-
-        ctx.fillStyle = `hsl(${i * 60}, 70%, 60%)`;
-        ctx.beginPath();
-        ctx.moveTo(200, 200);
-        ctx.arc(200, 200, 200, angle, angle + arc);
-        ctx.fill();
-
-        ctx.save();
-        ctx.translate(200, 200);
-        ctx.rotate(angle + arc / 2);
-        ctx.fillStyle = "black";
-        ctx.font = "14px Arial";
-        ctx.fillText(opt, 100, 0);
-        ctx.restore();
-    });
-}
-
-function spin() {
-    if (spinning) return;
-    spinning = true;
-
-    let spinAngle = Math.random() * 2000 + 3000;
-    let duration = 3500;
-    let start = null;
-
-    function animate(timestamp) {
-        if (!start) start = timestamp;
-        let progress = timestamp - start;
-
-        let easeOut = 1 - Math.pow(1 - progress / duration, 3);
-        startAngle += (spinAngle * easeOut) * Math.PI / 180;
-
-        drawWheel();
-
-        if (progress < duration) {
-            requestAnimationFrame(animate);
-        } else {
-            spinning = false;
-            showResult();
+        function resizeCanvas() {
+            let size = Math.min(window.innerWidth * 0.9, 400);
+            canvas.width = size;
+            canvas.height = size;
         }
-    }
 
-    requestAnimationFrame(animate);
-}
+        window.addEventListener("resize", () => {
+            resizeCanvas();
+            drawWheel();
+        });
 
-function showResult() {
-    let degrees = startAngle * 180 / Math.PI;
+        function drawWheel() {
+            if (options.length === 0) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    let normalized = (360 - ((degrees - 270) % 360)) % 360;
+                ctx.fillStyle = "white";
+                ctx.font = "16px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText("No hay opciones", canvas.width / 2, canvas.height / 2);
 
-    let index = Math.floor(normalized / (360 / options.length));
+                return;
+            } //por si no hay nada para mostrar
+            arc = Math.PI * 2 / options.length;
+            let size = canvas.width;
+            let center = size / 2;
 
-    let winner = options[index];
+            ctx.clearRect(0, 0, size, size);
 
-    document.getElementById("resultText").innerText = winner;
-    document.getElementById("resultModal").style.display = "flex";
-}
+            options.forEach((opt, i) => {
+                let angle = startAngle + i * arc;
 
-function closeModal() {
-    document.getElementById("resultModal").style.display = "none";
-}
+                ctx.fillStyle = `hsl(${(i * 360 / options.length)}, 70%, 60%)`;
+                ctx.beginPath();
+                ctx.moveTo(center, center);
+                ctx.arc(center, center, center, angle, angle + arc);
+                ctx.fill();
 
-function addOption() {
-    let input = document.getElementById("newOption");
-    if (input.value) {
-        options.push(input.value);
-        input.value = "";
+                ctx.save();
+                ctx.translate(center, center);
+                ctx.rotate(angle + arc / 2);
+                ctx.fillStyle = "#fff";
+                let fontSize = Math.max(12, canvas.width / (options.length * 2));
+                ctx.font = `bold ${fontSize}px Arial`;
+                ctx.textAlign = "center";
+
+                // 🔥 Sombra para mejorar lectura
+                ctx.shadowColor = "rgba(0,0,0,0.8)";
+                ctx.shadowBlur = 4;
+                ctx.shadowOffsetX = 2;
+                ctx.shadowOffsetY = 2;
+
+                // 🔥 Borde (stroke) para contraste
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = Math.max(2, center * 0.015);
+
+                // Dibujar texto con borde + relleno
+                ctx.strokeText(opt, center * 0.65, 0);
+                ctx.fillText(opt, center * 0.65, 0);
+
+                // reset sombra (importante)
+                ctx.shadowColor = "transparent";
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+                ctx.restore();
+            });
+        }
+
+        function spin() {
+            if (spinning) return;
+            spinning = true;
+
+            let spinAngle = Math.random() * 2000 + 3000;
+            let duration = 3500;
+            let start = null;
+
+            function animate(timestamp) {
+                if (!start) start = timestamp;
+                let progress = timestamp - start;
+
+                let easeOut = 1 - Math.pow(1 - progress / duration, 3);
+                startAngle += (spinAngle * easeOut) * Math.PI / 180;
+
+                drawWheel();
+
+                if (progress < duration) {
+                    requestAnimationFrame(animate);
+                } else {
+                    spinning = false;
+                    showResult();
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        function showResult() {
+            let degrees = startAngle * 180 / Math.PI;
+
+            let normalized = (360 - ((degrees - 270) % 360)) % 360;
+
+            let index = Math.floor(normalized / (360 / options.length));
+
+            let winner = options[index];
+
+            document.getElementById("resultText").innerText = winner;
+            document.getElementById("resultModal").style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById("resultModal").style.display = "none";
+        }
+
+        function addOption() {
+            let input = document.getElementById("newOption");
+            if (input.value) {
+                options.push(input.value);
+                input.value = "";
+                updateBox();
+                drawWheel();
+            }
+        }
+
+        function updateBox() {
+            document.getElementById("optionsBox").value = options.join("\n");
+        }
+
+        function saveOptions() {
+            options = document.getElementById("optionsBox").value.split("\n").filter(o => o);
+            localStorage.setItem("wheelOptions", JSON.stringify(options));
+            drawWheel();
+        }
+
+        function loadOptions() {
+            let saved = localStorage.getItem("wheelOptions");
+            if (saved) {
+                options = JSON.parse(saved);
+                updateBox();
+                drawWheel();
+            }
+        }
+
+        function exportJSON() {
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(options));
+            let dl = document.createElement("a");
+            dl.setAttribute("href", dataStr);
+            dl.setAttribute("download", "ruleta.json");
+            dl.click();
+        }
+
+        function importJSON(event) {
+            let file = event.target.files[0];
+            let reader = new FileReader();
+
+            reader.onload = function (e) {
+                options = JSON.parse(e.target.result);
+                updateBox();
+                drawWheel();
+            };
+
+            reader.readAsText(file);
+        }
+
+        // init
+        resizeCanvas();
         updateBox();
         drawWheel();
-    }
-}
-
-function updateBox() {
-    document.getElementById("optionsBox").value = options.join("\n");
-}
-
-function saveOptions() {
-    options = document.getElementById("optionsBox").value.split("\n").filter(o => o);
-    localStorage.setItem("wheelOptions", JSON.stringify(options));
-    drawWheel();
-}
-
-function loadOptions() {
-    let saved = localStorage.getItem("wheelOptions");
-    if (saved) {
-        options = JSON.parse(saved);
-        updateBox();
-        drawWheel();
-    }
-}
-
-function exportJSON() {
-    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(options));
-    let dl = document.createElement("a");
-    dl.setAttribute("href", dataStr);
-    dl.setAttribute("download", "ruleta.json");
-    dl.click();
-}
-
-function importJSON(event) {
-    let file = event.target.files[0];
-    let reader = new FileReader();
-
-    reader.onload = function(e) {
-        options = JSON.parse(e.target.result);
-        updateBox();
-        drawWheel();
-    };
-
-    reader.readAsText(file);
-}
-
-// init
-updateBox();
-drawWheel();
-</script>
+    </script>
 
 </body>
+
 </html>
