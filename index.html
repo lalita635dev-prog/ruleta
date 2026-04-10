@@ -2,50 +2,101 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Ruleta de Decisiones</title>
+<title>Ruleta by Lalita635</title>
+
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        background: #1e1e2f;
-        color: white;
-    }
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: #1e1e2f;
+    color: white;
+}
 
-    h1 {
-        margin-top: 20px;
-    }
+h1 {
+    margin-top: 20px;
+}
 
-    canvas {
-        margin-top: 20px;
-        background: #fff;
-        border-radius: 50%;
-    }
+/* Flecha */
+.pointer {
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-bottom: 30px solid #ff4d6d;
+    margin: 0 auto;
+}
 
-    button, input {
-        margin: 5px;
-        padding: 10px;
-        border: none;
-        border-radius: 5px;
-    }
+/* Canvas */
+canvas {
+    margin-top: 10px;
+    background: #fff;
+    border-radius: 50%;
+}
 
-    button {
-        cursor: pointer;
-        background: #ff4d6d;
-        color: white;
-    }
+/* Botones */
+button, input {
+    margin: 5px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+}
 
-    textarea {
-        width: 80%;
-        height: 80px;
-        margin-top: 10px;
-    }
+button {
+    cursor: pointer;
+    background: #ff4d6d;
+    color: white;
+}
+
+/* Textarea */
+textarea {
+    width: 80%;
+    height: 80px;
+    margin-top: 10px;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #2a2a40;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    animation: pop 0.3s ease;
+}
+
+@keyframes pop {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.modal h2 {
+    margin-bottom: 20px;
+}
+
+.close-btn {
+    background: #4CAF50;
+}
 </style>
 </head>
+
 <body>
 
-<h1>🎡 Ruleta de Poderes Ocultos</h1>
+<h1>🎡 Ruleta de Opciones</h1>
 
+<div class="pointer"></div>
 <canvas id="wheel" width="400" height="400"></canvas>
+
 <br>
 <button onclick="spin()">Girar</button>
 
@@ -60,6 +111,15 @@
 <button onclick="loadOptions()">Cargar</button>
 <button onclick="exportJSON()">Exportar</button>
 <input type="file" onchange="importJSON(event)">
+
+<!-- Modal -->
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <h2>🏆 Resultado</h2>
+        <p id="resultText"></p>
+        <button class="close-btn" onclick="closeModal()">Cerrar</button>
+    </div>
+</div>
 
 <script>
 let options = ["Alienígena", "Vampiro", "Sirena", "Hechicero", "Hada", "Licántropo"];
@@ -87,7 +147,8 @@ function drawWheel() {
         ctx.translate(200, 200);
         ctx.rotate(angle + arc / 2);
         ctx.fillStyle = "black";
-        ctx.fillText(opt, 80, 0);
+        ctx.font = "14px Arial";
+        ctx.fillText(opt, 100, 0);
         ctx.restore();
     });
 }
@@ -96,8 +157,8 @@ function spin() {
     if (spinning) return;
     spinning = true;
 
-    let spinAngle = Math.random() * 2000 + 2000;
-    let duration = 3000;
+    let spinAngle = Math.random() * 2000 + 3000;
+    let duration = 3500;
     let start = null;
 
     function animate(timestamp) {
@@ -121,8 +182,18 @@ function spin() {
 }
 
 function showResult() {
-    let index = Math.floor((options.length - (startAngle / (Math.PI * 2)) * options.length) % options.length);
-    alert("Ganador: " + options[index]);
+    let degrees = startAngle * 180 / Math.PI;
+    let normalized = (360 - (degrees % 360)) % 360;
+    let index = Math.floor(normalized / (360 / options.length));
+
+    let winner = options[index];
+
+    document.getElementById("resultText").innerText = winner;
+    document.getElementById("resultModal").style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById("resultModal").style.display = "none";
 }
 
 function addOption() {
