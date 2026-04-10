@@ -183,7 +183,9 @@ function spin() {
 
 function showResult() {
     let degrees = startAngle * 180 / Math.PI;
-    let normalized = (360 - (degrees % 360)) % 360;
+
+    let normalized = (360 - ((degrees - 90) % 360)) % 360;
+
     let index = Math.floor(normalized / (360 / options.length));
 
     let winner = options[index];
