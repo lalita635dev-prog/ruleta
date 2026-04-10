@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Ruleta de Decisiones</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background: #1e1e2f;
+        color: white;
+    }
+
+    h1 {
+        margin-top: 20px;
+    }
+
+    canvas {
+        margin-top: 20px;
+        background: #fff;
+        border-radius: 50%;
+    }
+
+    button, input {
+        margin: 5px;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+    }
+
+    button {
+        cursor: pointer;
+        background: #ff4d6d;
+        color: white;
+    }
+
+    textarea {
+        width: 80%;
+        height: 80px;
+        margin-top: 10px;
+    }
+</style>
+</head>
+<body>
+
+<h1>🎡 Ruleta de Poderes Ocultos</h1>
+
+<canvas id="wheel" width="400" height="400"></canvas>
+<br>
+<button onclick="spin()">Girar</button>
+
+<h3>Opciones</h3>
+<input id="newOption" placeholder="Nueva opción">
+<button onclick="addOption()">Agregar</button>
+
+<br>
+<textarea id="optionsBox"></textarea><br>
+
+<button onclick="saveOptions()">Guardar</button>
+<button onclick="loadOptions()">Cargar</button>
+<button onclick="exportJSON()">Exportar</button>
+<input type="file" onchange="importJSON(event)">
+
+<script>
+let options = ["Alienígena", "Vampiro", "Sirena", "Hechicero", "Hada", "Licántropo"];
+let startAngle = 0;
+let arc;
+let spinning = false;
+
+const canvas = document.getElementById("wheel");
+const ctx = canvas.getContext("2d");
+
+function drawWheel() {
+    arc = Math.PI * 2 / options.length;
+    ctx.clearRect(0, 0, 400, 400);
+
+    options.forEach((opt, i) => {
+        let angle = startAngle + i * arc;
+
+        ctx.fillStyle = `hsl(${i * 60}, 70%, 60%)`;
+        ctx.beginPath();
+        ctx.moveTo(200, 200);
+        ctx.arc(200, 200, 200, angle, angle + arc);
+        ctx.fill();
+
+        ctx.save();
+        ctx.translate(200, 200);
+        ctx.rotate(angle + arc / 2);
+        ctx.fillStyle = "black";
+        ctx.fillText(opt, 80, 0);
+        ctx.restore();
+    });
+}
+
+function spin() {
+    if (spinning) return;
+    spinning = true;
+
+    let spinAngle = Math.random() * 2000 + 2000;
+    let duration = 3000;
+    let start = null;
+
+    function animate(timestamp) {
+        if (!start) start = timestamp;
+        let progress = timestamp - start;
+
+        let easeOut = 1 - Math.pow(1 - progress / duration, 3);
+        startAngle += (spinAngle * easeOut) * Math.PI / 180;
+
+        drawWheel();
+
+        if (progress < duration) {
+            requestAnimationFrame(animate);
+        } else {
+            spinning = false;
+            showResult();
+        }
+    }
+
+    requestAnimationFrame(animate);
+}
+
+function showResult() {
+    let index = Math.floor((options.length - (startAngle / (Math.PI * 2)) * options.length) % options.length);
+    alert("Ganador: " + options[index]);
+}
+
+function addOption() {
+    let input = document.getElementById("newOption");
+    if (input.value) {
+        options.push(input.value);
+        input.value = "";
+        updateBox();
+        drawWheel();
+    }
+}
+
+function updateBox() {
+    document.getElementById("optionsBox").value = options.join("\n");
+}
+
+function saveOptions() {
+    options = document.getElementById("optionsBox").value.split("\n").filter(o => o);
+    localStorage.setItem("wheelOptions", JSON.stringify(options));
+    drawWheel();
+}
+
+function loadOptions() {
+    let saved = localStorage.getItem("wheelOptions");
+    if (saved) {
+        options = JSON.parse(saved);
+        updateBox();
+        drawWheel();
+    }
+}
+
+function exportJSON() {
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(options));
+    let dl = document.createElement("a");
+    dl.setAttribute("href", dataStr);
+    dl.setAttribute("download", "ruleta.json");
+    dl.click();
+}
+
+function importJSON(event) {
+    let file = event.target.files[0];
+    let reader = new FileReader();
+
+    reader.onload = function(e) {
+        options = JSON.parse(e.target.result);
+        updateBox();
+        drawWheel();
+    };
+
+    reader.readAsText(file);
+}
+
+// init
+updateBox();
+drawWheel();
+</script>
+
+</body>
+</html>
